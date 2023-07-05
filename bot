@@ -1,0 +1,74 @@
+import telebot  
+from telebot import types
+import datetime
+
+now = datetime.date.today()
+
+
+bot = telebot.TeleBot("6193639347:AAGM7aAzZd7-w-mlAU7v-KYOUggy0XLelPE")   
+chatid =-1001930045060
+adminid = 6014596729
+
+ 
+@bot.message_handler(content_types='text') 
+def menu(message): 
+    if message.text=="/start": 
+        markup=types.ReplyKeyboardMarkup(resize_keyboard=True) 
+        item1=types.KeyboardButton("Ro'yhatdan o'tish") 
+        markup.add(item1) 
+        bot.send_message(message.chat.id," INFINITY o'quv markazining Telegram botiga xush kelibsiz! Biz sizga ilmiy maqsadlaringizga erishishda va o'qishni oson va samaraliroq qilishda yordam berishdan xursandmiz. Boshlash uchun biz siz haqingizda bir oz ko'proq ma'lumot olmoqchimiz. Iltimos, xizmatlarimizni sizning ehtiyojlaringiz va afzalliklaringizga moslashtirishimiz uchun bir nechta savollarga javob bering.\n\n Welcome to the INFINITY Study Center's Telegram Bot! We're excited to help you reach your academic goals and make studying easier and more efficient. To get started, we'd like to learn a bit more about you. Please take a moment to answer a few questions so we can tailor our services to your needs and preferences.",reply_markup=markup) 
+ 
+    if message.text=="Ro'yhatdan o'tish": 
+        msg=bot.send_message(message.chat.id,"Ism Familiyangizni to'liq holda kiriting!") 
+        bot.register_next_step_handler(msg,age) 
+
+    if message.text == "ping" :
+        bot.send_message(message.chat.id,message.chat.id)
+ 
+contacts=[] 
+def age(message):
+    name = message.text 
+    contacts.append(name)
+    markup=types.ReplyKeyboardMarkup(resize_keyboard=True) 
+    item1=types.KeyboardButton("8-12")
+    item2 = types.KeyboardButton("12-16")
+    item3 = types.KeyboardButton("16 >")
+    markup.add(item1,item2,item3)  
+    msg = bot.send_message(message.chat.id,"Yoshingizni tanlang : ", reply_markup= markup)
+    bot.register_next_step_handler(msg, who)
+
+def who(message):
+    age = message.text
+    contacts.append(age)
+    markup=types.ReplyKeyboardMarkup(resize_keyboard=True) 
+    item1=types.KeyboardButton("O'zim uchun")
+    item2 = types.KeyboardButton("Farzandim uchun") 
+    markup.add(item1,item2) 
+    msg =bot.send_message(message.chat.id,"Kursni kim uchun tanlayabsiz",reply_markup=markup)
+    bot.register_next_step_handler(msg,create)
+    return
+def create(message):  
+    who = message.text
+    contacts.append(who)
+    msg=bot.send_message(message.chat.id,"Siz bilan bog'lanishimiz uchun telefon raqamingizni jo'nating ...") 
+    bot.register_next_step_handler(msg,phone) 
+ 
+    return  
+ 
+def phone(message):  
+    markup=types.ReplyKeyboardMarkup(resize_keyboard=True) 
+    item1=types.KeyboardButton("Ro'yhatdan o'tish") 
+    markup.add(item1)
+    number=message.text 
+ 
+    bot.send_message(message.chat.id,"Tabriklaymiz siz bilan tez orada bog'lanishadi.", reply_markup=markup) 
+    contacts.append(number) 
+    
+    bot.send_message(chatid,f" Ism: {contacts[0]},\n Yosh: {contacts[1]},\n Kurs kim uchun: {contacts[2]},\n Telefon raqam: {contacts[3]}\n Sana: {now}")
+    contacts.clear()
+ 
+    return 
+
+bot.enable_save_next_step_handlers(delay=1) 
+bot.load_next_step_handlers 
+bot.polling(none_stop=True,interval=0)
